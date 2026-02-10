@@ -1,0 +1,19 @@
+#!/bin/false
+
+# the application expects bitmask-root in /usr/local/sbin
+# so we have to make a symlink from the AppDir to there
+# we need to call pkexec since it requires privileges
+  
+_symlink_to_usr_local() {
+	source="$APPDIR"/bin/bitmask-root
+	target=/usr/local/sbin/bitmask-root
+
+	if [ "$(readlink -f "$target" )" != "$source" ]; then
+		pkexec /bin/sh -c "
+			mkdir -p /usr/local/sbin
+			ln -sfn \"$source\" \"$target\"
+		"
+	fi
+}
+
+_symlink_to_usr_local || :
