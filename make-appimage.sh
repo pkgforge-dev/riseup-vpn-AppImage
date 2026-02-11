@@ -20,6 +20,7 @@ quick-sharun \
 dst=./AppDir/share/polkit-1/actions
 mkdir -p "$dst"
 cp -v /usr/share/polkit-1/actions/se.leap.bitmask.policy "$dst"
+sed -i -e 's|/usr/sbin|/usr/local/sbin|g' "$dst"
 
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
