@@ -1,19 +1,24 @@
 #!/bin/false
 
 # the application expects bitmask-root in /usr/local/sbin
-# so we have to make a symlink from the AppDir to there
+# it also needs a polkit file in /usr
+# so we have to make a install from the AppDir to there
 # we need to call pkexec since it requires privileges
-  
-_symlink_to_usr_local() {
-	source="$APPDIR"/bin/bitmask-root
-	target=/usr/local/sbin/bitmask-root
 
-	if [ "$(readlink -f "$target" )" != "$source" ]; then
+_install_to_usr_local() {
+	bitmask_src="$APPDIR"/bin/bitmask-root
+	bitmask_dst=/usr/local/sbin/bitmask-root
+
+	rule_src="$APPDIR"/share/polkit-1/actions/se.leap.bitmask.policy
+	rule_dst=/usr/local/share/polkit-1/actions/se.leap.bitmask.policy
+
+	if [ ! -f "$bitmask_dst" ] || [ ! -f "$rule_dst" ]; then
 		pkexec /bin/sh -c "
-			mkdir -p /usr/local/sbin
-			ln -sfn \"$source\" \"$target\"
+			mkdir -p /usr/local/sbin /usr/local/share/polkit-1/actions
+			cp -v \"$bitmask_src\" \"$bitmask_dst\"
+			cp -v \"$rule_src\" \"$rule_dst\"
 		"
 	fi
 }
 
-_symlink_to_usr_local || :
+_install_to_usr_local || :
